@@ -32,12 +32,6 @@ class Subreddit:
 
         return requests.post(url, headers=headers, params=params)
 
-    def destroy_subreddit_by_new(self, sub_name):
-        response = self.get_subreddit_by_new(sub_name)
-        for item in response.json()['data']['children']:
-            print('Title: '     + item['data']['title'])
-            print('Subreddit: ' + item['data']['subreddit'])
-
     def my_subreddits(self, after):
         subs_url = "https://oauth.reddit.com/subreddits/mine/subscriber"
 
