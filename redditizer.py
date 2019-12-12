@@ -13,4 +13,4 @@ print(auth.access_token)
 front = FrontPage(auth.access_token)
 
 sub = Subreddit(auth.access_token)
-#print(sub.all_subreddit_names())
+#print(sub.all_my_subreddit_names())

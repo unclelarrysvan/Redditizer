@@ -1,21 +1,44 @@
 import requests
+from models.response import *
+from models.link import *
 
 class Subreddit:
     def __init__(self, access_token):
         self.access_token = access_token
 
-    def all_subreddit_names(self, names = [], after = ''):
-        response = self.subreddits(after)
+    def all_my_subreddit_names(self, names = [], after = ''):
+        response = self.my_subreddits(after)
 
-        for sub in response.json()['data']['children']:
+        for sub in response.items:
             names.append(sub['data']['display_name'])
 
         if response.json()['data']['after']:
-            self.all_subreddit_names(names, response.json()['data']['after'])
+            self.all_my_subreddit_names(names, response.json()['data']['after'])
 
         return names
 
-    def subreddits(self, after):
+    def get_subreddit_by_verb(self, sub_name, verb):
+        url = "https://oauth.reddit.com/r/" + sub_name + "/" + verb
+        return self.get(url)
+
+    def get_subreddit_by_new(self, sub_name):
+        return self.get_subreddit_by_verb(sub_name, 'new')
+
+    def downvote(self, post_id):
+        url = "https://oauth.reddit.com/api/vote"
+        bearer_header = "bearer " + self.access_token
+        headers = { "Authorization": bearer_header, "User-Agent": "ChangeMeClient/0.1 by UncleLarrysVan" }
+        params = { 'dir': '-1', 'id': post_id }
+
+        return requests.post(url, headers=headers, params=params)
+
+    def destroy_subreddit_by_new(self, sub_name):
+        response = self.get_subreddit_by_new(sub_name)
+        for item in response.json()['data']['children']:
+            print('Title: '     + item['data']['title'])
+            print('Subreddit: ' + item['data']['subreddit'])
+
+    def my_subreddits(self, after):
         subs_url = "https://oauth.reddit.com/subreddits/mine/subscriber"
 
         if after:
@@ -29,4 +52,4 @@ class Subreddit:
         bearer_header = "bearer " + self.access_token
         headers = {"Authorization": bearer_header, "User-Agent": "ChangeMeClient/0.1 by UncleLarrysVan"}
 
-        return requests.get(url, headers=headers)
+        return Response(requests.get(url, headers=headers))
