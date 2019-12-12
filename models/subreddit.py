@@ -26,11 +26,9 @@ class Subreddit:
 
     def downvote(self, post_id):
         url = "https://oauth.reddit.com/api/vote"
-        bearer_header = "bearer " + self.access_token
-        headers = { "Authorization": bearer_header, "User-Agent": "ChangeMeClient/0.1 by UncleLarrysVan" }
         params = { 'dir': '-1', 'id': post_id }
 
-        return requests.post(url, headers=headers, params=params)
+        return requests.post(url, headers=self.headers(), params=params)
 
     def my_subreddits(self, after):
         subs_url = "https://oauth.reddit.com/subreddits/mine/subscriber"
@@ -43,7 +41,8 @@ class Subreddit:
         return self.get(url)
 
     def get(self, url):
+        return Response(requests.get(url, headers=self.headers()))
+
+    def headers():
         bearer_header = "bearer " + self.access_token
         headers = {"Authorization": bearer_header, "User-Agent": "ChangeMeClient/0.1 by UncleLarrysVan"}
-
-        return Response(requests.get(url, headers=headers))
