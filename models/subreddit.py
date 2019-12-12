@@ -25,23 +25,27 @@ class Subreddit:
         return self.get_subreddit_by_verb(sub_name, 'new')
 
     def downvote(self, post_id):
+        return self.vote(post_id, '-1')
+
+    def upvote(self, post_id):
+        return self.vote(post_id, '1')
+
+    def vote(self, post_id, direction):
         url = "https://oauth.reddit.com/api/vote"
-        params = { 'dir': '-1', 'id': post_id }
+        params = { 'dir': direction, 'id': post_id }
 
         return requests.post(url, headers=self.headers(), params=params)
 
     def my_subreddits(self, after):
-        subs_url = "https://oauth.reddit.com/subreddits/mine/subscriber"
+        url = "https://oauth.reddit.com/subreddits/mine/subscriber"
+        params = { 'after': after }
 
-        if after:
-          url = subs_url + "?" + "after=" + after
-        else:
-          url = subs_url
+        return self.get(url, params)
 
-        return self.get(url)
-
-    def get(self, url):
-        return Response(requests.get(url, headers=self.headers()))
+    def get(self, url, params = {}):
+        return Response(
+                   requests.get(url, headers=self.headers(), params=params)
+               )
 
     def headers():
         bearer_header = "bearer " + self.access_token
