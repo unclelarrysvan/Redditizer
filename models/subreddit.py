@@ -17,6 +17,12 @@ class Subreddit:
 
         return names
 
+    def my_subreddits(self, after):
+        url = "https://oauth.reddit.com/subreddits/mine/subscriber"
+        params = { 'after': after }
+
+        return self.get(url, params)
+
     def get_subreddit_by_verb(self, sub_name, verb):
         url = "https://oauth.reddit.com/r/" + sub_name + "/" + verb
         return self.get(url)
@@ -34,19 +40,13 @@ class Subreddit:
         url = "https://oauth.reddit.com/api/vote"
         params = { 'dir': direction, 'id': post_id }
 
-        return requests.post(url, headers=self.headers(), params=params)
-
-    def my_subreddits(self, after):
-        url = "https://oauth.reddit.com/subreddits/mine/subscriber"
-        params = { 'after': after }
-
-        return self.get(url, params)
+        return requests.post(url, headers=self.auth_headers(), params=params)
 
     def get(self, url, params = {}):
         return Response(
-                   requests.get(url, headers=self.headers(), params=params)
+                   requests.get(url, headers=self.auth_headers(), params=params)
                )
 
-    def headers():
+    def auth_headers(self):
         bearer_header = "bearer " + self.access_token
-        headers = {"Authorization": bearer_header, "User-Agent": "ChangeMeClient/0.1 by UncleLarrysVan"}
+        return {"Authorization": bearer_header, "User-Agent": "ChangeMeClient/0.1 by UncleLarrysVan"}
